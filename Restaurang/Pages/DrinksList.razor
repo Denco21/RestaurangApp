@@ -1,0 +1,41 @@
+﻿@page "/DrinksList"
+@using Restaurang.Models
+@using Restaurang.Services.DataService
+@inject IDataService DataService
+
+<h3 class="title">Drycker</h3>
+
+@if (drinks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="d-flex justify-content-center flex-wrap"> 
+    @foreach (var drink in drinks)
+    {
+
+        <div class="card" style="width: 15rem; margin: 9px;"> 
+             <img src="@drink.Image" class="card-img-top @(drink.Image == "Images/festis.jpg" ? "img-festis" : drink.Image == "Images/cafe.jpg" ? "img-cafe" :"img-drink")" alt="@drink.Name" />
+
+          @*  <img src="@drink.Image" class="card-img-top img-drink" alt="@drink.Name" />*@
+
+            <div class="card-body">
+                <h5 class="card-title">@drink.Name</h5>
+                <p class="card-text">@drink.Description</p>
+                <p class="card-text">@drink.Price SEK</p>
+                <a href="#" class="btn btn-primary">Beställ</a>
+            </div>
+        </div>
+    }
+</div>
+}
+
+@code {
+    private List<Drink> drinks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        drinks = await DataService.GetDrinksAsync();
+    }
+}

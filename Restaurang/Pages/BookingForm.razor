@@ -1,0 +1,88 @@
+﻿@page "/Booking"
+
+@using Restaurang.Models
+@using Restaurang.Services.DataService;
+@inject IDataService DataService
+@inject NavigationManager NavigationManager
+
+<h3 class="title"> Ny Bookning</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
+
+<EditForm Model="booking" OnValidSubmit="HandleValidSubmit" class="p-4 shadow bg-white rounded">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="email">Email</label>
+         <InputText id="email" class="form-control" @bind-Value="booking.CustomerEmail" />
+    </div>
+   
+<div class="form-group">
+        <label for="name">Namn:</label>
+        <InputText id="name" class="form-control" @bind-Value="booking.CustomerName" />
+    </div>
+    <div class="form-group">
+        <label for="bookingDate">Datum för bokningen:</label>
+        <InputDate id="bookingDate" class="form-control" @bind-Value="booking.BookingDate" />
+    </div>
+    <div class="form-group">
+        <label for="bookingTime">Tid för bokningen:</label>
+        <InputText id="bookingTime" class="form-control" @bind-Value="bookingTime" @oninput="UpdateBookingTime" />
+    </div>
+    <div class="form-group">
+        <label for="numberOfGuests">Antal gäster:</label>
+        <InputNumber id="numberOfGuests" class="form-control" @bind-Value="booking.NumberOfGuests" />
+    </div>
+    <br />
+
+    <button type="submit" class="btn btn-primary">Boka bord</button>
+</EditForm>
+
+@code {
+    private Booking booking = new Booking(); // This line creates a new instance of Booking
+
+    private string bookingTime;
+    
+    string ErrorMessage { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        bookingTime = booking.BookingTime.ToString(@"hh\:mm");
+    }
+
+    private void UpdateBookingTime(ChangeEventArgs e)
+    {
+        bookingTime = e.Value.ToString();
+        booking.BookingTime = TimeSpan.TryParse(bookingTime, out var time) ? time : TimeSpan.Zero;
+    }
+private async void HandleValidSubmit()
+{
+    TimeSpan start = new TimeSpan(10, 0, 0); 
+    TimeSpan end = new TimeSpan(23, 0, 0);  
+    if (booking.BookingTime < start || booking.BookingTime > end)
+    {
+        ErrorMessage = "Bokningstid måste vara mellan 10:00 och 23:00.";
+    }
+    else
+    {
+        try 
+        {
+            // make the booking
+            await DataService.CreateBooking(booking);
+            NavigationManager.NavigateTo("/BookingConfirmation");
+        }
+        catch (Exception)
+        {
+            ErrorMessage = "Något gick fel. Var god försök igen.";
+        }
+    }
+}
+
+
+}

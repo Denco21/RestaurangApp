@@ -1,0 +1,17 @@
+﻿@page "/BookingConfirmation"
+
+<h3>Din bokning har lyckats!</h3>
+
+<p>Tack för att du bokade ett bord hos oss. Vi ser fram emot ditt besök!</p>
+
+<button @onclick="GoBack">Gå tillbaka</button>
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

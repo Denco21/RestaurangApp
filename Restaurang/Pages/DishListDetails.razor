@@ -1,0 +1,38 @@
+﻿@page "/DishDetails/{Id:int}"
+
+@using Restaurang.Models
+@using Restaurang.Services.DataService
+@inject IDataService DataService
+
+<h3 class="title">Beskrivning</h3>
+
+@if (dish == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="@($"/{dish.Image}")" class="card-img-top" alt="@dish.Name">
+            <div class="card-body">
+                <h5 class="card-title">@dish.Name</h5>
+                <p class="card-text">@dish.Description</p>
+                <p class="card-text">@dish.Price SEK</p>
+                <p class="card-text">@dish.Ingredients</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Dish? dish;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dish = await DataService.GetDishById(Id);
+    }
+}

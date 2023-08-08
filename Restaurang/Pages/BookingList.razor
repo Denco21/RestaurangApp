@@ -1,0 +1,32 @@
+﻿@page "/Bookings"
+
+@using Restaurang.Models
+@using Restaurang.Services.DataService;
+@inject IDataService DataService
+
+<h3>Booking List</h3>
+
+@if (bookings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var booking in bookings)
+    {
+        <div>
+            <h4>@booking.CustomerName</h4>
+            <p>@booking.BookingDate.ToShortDateString()</p>
+            <p>@booking.BookingTime.ToString()</p>
+        </div>
+    }
+}
+
+@code {
+    private List<Booking> bookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookings = await DataService.GetBookings();
+    }
+}

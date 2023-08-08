@@ -1,0 +1,49 @@
+﻿@page "/Dishes"
+
+@using Restaurang.Models
+@using Restaurang.Services.DataService
+@inject IDataService DataService
+@inject NavigationManager NavigationManager
+
+
+<h3 class="title">Maträtter</h3>
+@if (dishes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        @foreach (var dish in dishes)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="@dish.Image" class="card-img-top" alt="@dish.Name">
+                    <div class="card-body">
+                        <p class="card-text">@dish.Name</p>
+                        <p class="card-text">@dish.Description</p>
+                        <p class="card-text">@dish.Price SEK</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => GoToDetails(dish.Id)">Se Mer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+@code {
+    private List<Dish>? dishes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dishes = await DataService.GetDishes();
+    }
+
+    private void GoToDetails(int id)
+    {
+        NavigationManager.NavigateTo($"/DishDetails/{id}");
+    }
+}
